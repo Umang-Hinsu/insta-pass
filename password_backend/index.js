@@ -12,9 +12,9 @@ app.use(express.json());
 
 app.use("/api/password", passwordRoutes);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 const MONGODB_URI =
-  process.env.MONGODB_URI || "mongodb://localhost:27017/insta_password_db";
+  process.env.MONGODB_URI
 
 mongoose
   .connect(MONGODB_URI)
