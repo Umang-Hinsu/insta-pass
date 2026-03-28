@@ -46,7 +46,7 @@ app.use(async (req, res, next) => {
     next();
   } catch (error) {
     console.error("Database connection failed:", error);
-    res.status(500).json({ message: "Internal server error: DB disconnected" });
+    res.status(500).json({ message: "Internal server error: DB disconnected",details: error.message, });
   }
 });
 
