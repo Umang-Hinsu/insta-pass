@@ -11,7 +11,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const rawUri = process.env.MONGODB_URI || "";
+const MONGODB_URI = rawUri.replace(/^["']|["']$/g, '').trim();
+
 if (!MONGODB_URI) {
   console.error("Fatal Error: MONGODB_URI is not defined.");
   process.exit(1);
@@ -27,14 +29,16 @@ async function connectDB() {
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000
-    }).then((mongoose) => {
-      console.log("Connected to MongoDB");
-      return mongoose;
-    });
+    cached.promise = mongoose
+      .connect(MONGODB_URI, {
+        serverSelectionTimeoutMS: 5000,
+      })
+      .then((mongoose) => {
+        console.log("Connected to MongoDB");
+        return mongoose;
+      });
   }
-  
+
   cached.conn = await cached.promise;
   return cached.conn;
 }
@@ -46,14 +50,17 @@ app.use(async (req, res, next) => {
     next();
   } catch (error) {
     console.error("Database connection failed:", error);
-    res.status(500).json({ message: "Internal server error: DB disconnected",details: error.message, });
+    res.status(500).json({
+      message: "Internal server error: DB disconnected",
+      details: error.message,
+    });
   }
 });
 
 app.use("/api/password", passwordRoutes);
 
 if (process.env.NODE_ENV !== "production") {
-  const PORT = process.env.PORT || 3000;
+  const PORT = process.env.PORT;
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
