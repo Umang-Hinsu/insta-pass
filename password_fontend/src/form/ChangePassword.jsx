@@ -65,26 +65,11 @@ const ChangePassword = () => {
 
   return (
     <div className="container">
-      {/* Top bar */}
-      <div className="top-bar">
-        {/* Left Arrow SVG */}
-        <button className="back-btn">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="20" y1="12" x2="4" y2="12"></line>
-            <polyline points="10 18 4 12 10 6"></polyline>
-          </svg>
-        </button>
-      </div>
-
+      
       <div className="content">
-        <div className="subtitle">Instagram</div>
+        <div className="subtitle" style={{ textAlign: "center", marginBottom: "20px" }}>
+          <img src="/favicon.png" alt="Instagram Logo" style={{ height: "45px", width: "auto", objectFit: "contain" }} />
+        </div>
 
         <h1 className="title">Change password</h1>
 
