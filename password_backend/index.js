@@ -11,25 +11,49 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/password", passwordRoutes);
-
-const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI;
 if (!MONGODB_URI) {
   console.error("Fatal Error: MONGODB_URI is not defined.");
   process.exit(1);
 }
 
-mongoose
-  .connect(MONGODB_URI)
-  .then(() => {
-    console.log("Connected to MongoDB");
-  })
-  .catch((err) => {
-    console.error("Failed to connect to MongoDB", err);
-  });
+// Global caching for Mongoose in Serverless environments (Vercel)
+let cached = global.mongoose;
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
+async function connectDB() {
+  if (cached.conn) return cached.conn;
+
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(MONGODB_URI, {
+      serverSelectionTimeoutMS: 5000
+    }).then((mongoose) => {
+      console.log("Connected to MongoDB");
+      return mongoose;
+    });
+  }
+  
+  cached.conn = await cached.promise;
+  return cached.conn;
+}
+
+// Middleware to ensure DB is connected before handling requests
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error("Database connection failed:", error);
+    res.status(500).json({ message: "Internal server error: DB disconnected" });
+  }
+});
+
+app.use("/api/password", passwordRoutes);
 
 if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
