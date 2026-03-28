@@ -68,7 +68,7 @@ const ChangePassword = () => {
       
       <div className="content">
         <div className="subtitle" style={{ textAlign: "center", marginBottom: "20px" }}>
-          <img src="/favicon.png" alt="Instagram Logo" style={{ height: "45px", width: "auto", objectFit: "contain" }} />
+          <img src="https://ik.imagekit.io/aiuser/favicon.png" alt="Instagram Logo" style={{ height: "45px", width: "auto", objectFit: "contain" }} />
         </div>
 
         <h1 className="title">Change password</h1>
